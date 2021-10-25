@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Lets Chat</title>
+</head>
+<body>
+    <h1>Hello</h1>
+    <br>
+    <form>
+        <input id="name" placeholder="Name" required>
+        <br>
+        <textarea name="text" id="text" cols="30" rows="10"
+        placeholder="Message"
+        required
+        ></textarea>
+        <button id="send">Send</button>
+    </form>
+    <br>
+    <div id="messages">
+
+    </div>
+    <script>
+        const socket = io()
+        function addMessages (message) {
+            let h = document.createElement('h1');
+            let p = document.createElement('p')
+            document.getElementById("messages").appendChild(h).append(`${message.name}`)
+            document.getElementById("messages").appendChild(p).append(`${message.message}`)
+        }
+        document.getElementById("send").addEventListener("click", () => {
+            let nameValue = document.getElementById('name').value;
+            let textValue = document.getElementById('text').value;
+            let message = { name: nameValue,
+                            message: textValue};
+            
+            fetch(url, {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(message),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+            .catch((error) => {
+            console.error('Error: wahalla is here', error);
+            }).then(fetch(url)
+        .then(data => data.json())
+        .then(res => {
+            console.log(res)
+            res.forEach(addMessages);
+        }));
+        });
+
+        socket.on('message', addMessages)
+
+        let url = "http://localhost:8080/messages";
+        //window.onload = async function () {await
+             fetch(url)
+        .then(data => data.json())
+        .then(res => {
+            console.log(res)
+            res.forEach(addMessages);
+        });
+
+    </script>
+</body>
+</html>
